@@ -19,8 +19,8 @@ This repository packages a two-phase host setup (`root` then `sysop`) that insta
 
 ## Quick Start
 
-1. **Customize** `Dockerfile`, `DXVars.pm`, `issue`, and `motd` — replace all `????` placeholders.
-2. **Upload** the six deploy files to `/tmp` on your VPS (see [Installation Guide](Docs/InstallationGuide.md)).
+1. **Customize** the four config files (`Dockerfile`, `DXVars.pm`, and optionally `docker-compose.yml` / `Listeners.pm`) — replace all `????` placeholders (see [Installation Guide](Docs/InstallationGuide.md)).
+2. **Upload** all six deploy files to `/tmp` on your VPS: `setup_root.sh`, `setup_sysop.sh`, `Dockerfile`, `docker-compose.yml`, `DXVars.pm`, `Listeners.pm`.
 3. **As root:** `chmod +x /tmp/*.sh && /tmp/setup_root.sh`
 4. **Log out**, then **log in as `sysop`** and run `/tmp/setup_sysop.sh`.
 5. **Verify:** `docker ps`, then `telnet <server-ip> 7300` or open `http://<server-ip>:8080`.
@@ -39,9 +39,17 @@ Adjust port mappings in `docker-compose.yml` if your environment requires differ
 
 ## Configuration Notes
 
-- **`DXVars.pm`** — Set your callsign, name, QTH, locator, email, and listener definitions. Lines containing `????` must be changed before deployment.
-- **`Dockerfile`** — Set the web console password and callsign in the `ttyd` entrypoint line.
-- **`issue` / `motd`** — Customize login banners; copy to `~/dxspider-prod/local_data/` after first deploy (see installation guide).
+Before upload, edit these files in the repo (full field list in [Installation Guide](Docs/InstallationGuide.md)):
+
+| File | Required changes |
+|------|------------------|
+| **`Dockerfile`** | Replace `sysop:????????` (web password) and `console.pl ?????` (console callsign) |
+| **`DXVars.pm`** | Replace all `$mycall`, `$myname`, `$myalias`, `$mylatitude`, `$mylongitude`, `$mylocator`, `$myqth`, `$myemail` placeholders (`????`) |
+| **`docker-compose.yml`** | Optional: uncomment or change external port mappings |
+| **`Listeners.pm`** | Optional: adjust listener addresses/ports; keep in sync with `DXVars.pm` `@listen` |
+| **`setup_root.sh`** / **`setup_sysop.sh`** | No changes needed |
+
+- **`issue` / `motd`** — Not uploaded in Step 1; customize locally, then copy to `~/dxspider-prod/local_data/` after deploy (see installation guide).
 - **Runtime data** — `local/`, `local_data/`, `connect/`, and `local_cmd/` are created on the server and mounted into the container; they are excluded from git via `.gitignore`.
 
 ## Server Directory Layout

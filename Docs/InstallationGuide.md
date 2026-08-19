@@ -45,39 +45,131 @@ Use this address wherever `<server-ip>` appears below.
 
 ## Step 1: Customize and Upload Files
 
-### Files to customize
+### The six files to upload
 
-Edit these repository files **before** uploading. Search for `????` placeholders and replace them with your values:
+Customize the four config files below, then upload **all six** files to `/tmp` on the server as `root`:
 
-| File | What to change |
-|------|----------------|
-| `Dockerfile` | Web console password and login callsign in the `ttyd` line |
-| `DXVars.pm` | Callsign, name, location, email, and listener ports |
-| `docker-compose.yml` | Published ports if needed |
-| `Listeners.pm` | Listener addresses and ports (if used separately from `DXVars.pm`) |
-| `issue` | Pre-login banner text |
-| `motd` | Post-login message of the day |
+| File | Customize before upload? |
+|------|--------------------------|
+| `Dockerfile` | **Yes** — web console password and callsign |
+| `DXVars.pm` | **Yes** — station identity and location |
+| `docker-compose.yml` | **Optional** — external port mappings |
+| `Listeners.pm` | **Optional** — listener addresses and ports |
+| `setup_root.sh` | No |
+| `setup_sysop.sh` | No |
 
-#### Dockerfile
+Search each file for `????` placeholders and replace them with your values. Comments marked `# Example:` show sample values only — do not leave the `????` strings in place.
 
-Change the web console credentials and console callsign:
+### Dockerfile
+
+In the `ttyd` line inside the entrypoint script, replace both placeholders:
+
+| Placeholder | Replace with |
+|-------------|--------------|
+| `sysop:????????` | Web console username `sysop` and your chosen password (8 characters shown as `????????`) |
+| `console.pl ?????` | Your console callsign (5 characters shown as `?????`; often matches `$myalias` in `DXVars.pm`) |
 
 ```dockerfile
-exec ttyd -p 8080 -W -c "sysop:YOUR_WEB_PASSWORD" perl -I/spider/local -I/spider/perl /spider/perl/console.pl YOUR-CALLSIGN
+exec ttyd -p 8080 -W -c "sysop:????????" perl -I/spider/local -I/spider/perl /spider/perl/console.pl ?????
 ```
 
-#### DXVars.pm
+Example after customization (your values will differ):
+
+```dockerfile
+exec ttyd -p 8080 -W -c "sysop:mySecretPw" perl -I/spider/local -I/spider/perl /spider/perl/console.pl W1ABC
+```
+
+### DXVars.pm
+
+Replace every line containing `????` before upload:
 
 ```perl
-$mycall    = "W3LPL";
-$myname    = "Your Name";
-$myalias   = "W3LPL-9";      # Web console / alias callsign
-$mylatitude  = 39.3;
-$mylongitude = -77.0;
-$mylocator = "FM19LG";
-$myqth     = "Glenwood, MD";
-$myemail   = "you@example.com";
+# this really does need to change for your system!!!!
+# use CAPITAL LETTERS
+$mycall = "????";
+
+# your name
+$myname = "?????";
+
+# Your 'normal' callsign (in CAPTTAL LETTERS)
+$myalias = "??????";  # Example:  W3LPL-9
+
+# Your latitude (+)ve = North (-)ve = South in degrees and decimal degrees
+$mylatitude = ?????;  #  Example:  +39.3
+
+# Your Longtitude (+)ve = East, (-)ve = West in degrees and decimal degrees
+$mylongitude = ????; #  Example:  -77.0
+
+# Your locator (USE CAPITAL LETTERS)
+$mylocator = "?????";  #  Example:  FM19LG
+
+# Your QTH (roughly)
+$myqth = "?????";     #  Example:  Glenwood, MD
+
+# Your e-mail address
+$myemail = "????????";
 ```
+
+| Variable | Placeholder | Notes |
+|----------|-------------|-------|
+| `$mycall` | `"????"` | Cluster node callsign (CAPITAL LETTERS) |
+| `$myname` | `"?????"` | Your name |
+| `$myalias` | `"??????"` | Normal / alias callsign (CAPITAL LETTERS); see `# Example:` comment |
+| `$mylatitude` | `?????` | Decimal degrees, no quotes; North positive |
+| `$mylongitude` | `????` | Decimal degrees, no quotes; East positive |
+| `$mylocator` | `"?????"` | Maidenhead locator (CAPITAL LETTERS); see `# Example:` comment |
+| `$myqth` | `"?????"` | City or area description; see `# Example:` comment |
+| `$myemail` | `"????????"` | Contact e-mail address |
+
+The file also defines cluster listeners at the bottom. Adjust ports or bind addresses if your deployment differs from the defaults:
+
+```perl
+@listen = (
+    [ '0.0.0.0', 7300, 'dx' ],    # User Handler (interactive login: banners, 'login:' prompt)
+    [ '0.0.0.0', 8001, 'node' ],  # Dedicated Node Handler (raw PC protocol, no banners/prompts)
+);
+```
+
+Optional: set `@my_cc` if your node spans multiple country codes (see comments in the file). Leave blank to derive from `$mycall`.
+
+### docker-compose.yml
+
+No `????` placeholders. Customize only if you need non-default **external** port mappings or IPv6 networking:
+
+| Line | Purpose |
+|------|---------|
+| `#- "23:7300"` | Map standard telnet port 23 to internal 7300 |
+| `#- "7373:7300"` | Alternative user port |
+| `- "7300:7300"` | Default user telnet (active) |
+| `#- "3607:8001"` | Example incoming ARCluster node port |
+| `- "8001:8001"` | Default node port (active) |
+| `- "8080:8080"` | Web console (active) |
+| `# enable_ipv6: true` | Enable IPv6 on the Docker network (commented by default) |
+| `# - subnet: fd00:172:28::/64` | IPv6 subnet (commented by default) |
+
+Uncomment and edit a mapping to change which host port is published. Internal container ports (`7300`, `8001`, `8080`) must stay aligned with `@listen` in `DXVars.pm` and the `Dockerfile` entrypoint.
+
+### Listeners.pm
+
+No `????` placeholders. This file defines which interfaces and ports DXSpider listens on. The shipped template has IPv4/IPv6 listeners enabled:
+
+```perl
+@listen = (
+# remove the '#' character from the next line to enable the listener!
+           ["::", 7300],     # IPV4 and IPV6
+           ["::", 8001],     # IPV4 and IPV6  - Cluster Connection Port
+```
+
+Customize by:
+
+- Uncommenting the alternative IPv4-only block if you do not want IPv6 (see comments in the file).
+- Adding or removing listener entries for additional ports.
+
+**Note:** `DXVars.pm` also defines `@listen` with handler types (`dx`, `node`). Ensure port numbers match between the two files, or consolidate listener configuration in `DXVars.pm` only and keep `Listeners.pm` consistent with your chosen approach.
+
+### setup_root.sh and setup_sysop.sh
+
+No customization required. Upload as-is.
 
 ### Upload to `/tmp`
 
@@ -180,14 +272,14 @@ You should see the `dxspider` container with ports `7300` and `8080` published.
 telnet localhost 7300
 ```
 
-Log in with your callsign. Example session:
+Log in with your callsign. Example session (your banner text will reflect your `$mycall` and `$myqth` settings):
 
 ```text
-login: KD4D
-Hello KD4D, this is W3LPL in Glenwood,MD
+login: W1ABC
+Hello W1ABC, this is YOURCALL in Your City,ST
 running DXSpider V1.57 build 686
 ...
-KD4D de W3LPL 30-Jul-2026 1649Z dxspider >
+W1ABC de YOURCALL 30-Jul-2026 1649Z dxspider >
 sh/user
 exit
 ```
@@ -206,7 +298,7 @@ Open in a browser:
 http://<server-ip>:8080
 ```
 
-Use the credentials from your customized `Dockerfile` (`sysop:YOUR_WEB_PASSWORD`) and the callsign from the `ttyd` line.
+Use the web console password you substituted for `????????` and the callsign you substituted for `?????` in the `Dockerfile` `ttyd` line.
 
 The `sh/node` command should work once the user database is initialized.
 
@@ -214,13 +306,15 @@ The `sh/node` command should work once the user database is initialized.
 
 ## Post-Install Configuration
 
-### Copy banner files
+### Customize and install banner files
 
-Copy `issue` and `motd` into the persistent data directory **as user `sysop`**:
+The repo includes `issue` (pre-login banner) and `motd` (post-login message). These are **not** among the six files uploaded in Step 1, but should be edited locally before copying to the server. Replace any site-specific text (callsign, location, node name) with your own.
+
+Copy customized files into the persistent data directory **as user `sysop`**:
 
 ```bash
-cp /tmp/issue ~/dxspider-prod/local_data/issue
-cp /tmp/motd  ~/dxspider-prod/local_data/motd
+cp /path/to/issue ~/dxspider-prod/local_data/issue
+cp /path/to/motd  ~/dxspider-prod/local_data/motd
 ```
 
 Restart the container if needed:
