@@ -1,0 +1,22 @@
+-------------------------------------------------------------------
+|                                                                 |
+|       Welcome to the W3LPL-Beta DX-Spider Telnet Server         |
+|             Located near Glenwood (Howard Co.), MD              |
+|                 Serving the Maryland - DC area                  |
+|                                                                 |
+|               CW skimmer spots are defaulted OFF                |
+|                  To enable CW skimmer spots:                    |
+|         set/skimmer -- Turns on all skimmer/RBN spots           |
+|       unset/skimmer -- Turns off all skimmer/RBN spots          |
+|                                                                 |
+|                     DX-Spider Users Manual:                     |
+|       https://wiki.dxcluster.org/wiki/DXSpider_User_Manual      |
+|                                                                 |
+|   HELP is available for a number of commands. The syntax is:    |
+|                        HELP <cmd>                               |
+|                                                                 |
+|       APROPOS <string> command will give you a list             |
+|           of commands to look at with HELP.                     |
+-------------------------------------------------------------------
+
+At the login prompt please enter your amateur radio callsign.

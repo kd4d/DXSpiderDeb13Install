@@ -1,0 +1,21 @@
+  
+Useful commands:
+     unset/skimmer    -> Turns off skimmer spots
+     set/skimmer      -> Turns on all spots including skimmer
+	 set/skimmer cw   -> Turns on only CW Skimmer Spots
+	 set/skimmer FT8  -> Turns on only FT8 and FT4 Skimmer Spots
+	 set/skimmer RTTY -> Turns on only RTTY spots
+	 set/skimmer RTTY FT8 -> Turns on RTTY and FT8 and FT4 Skimmer Spots
+     apropos keyword  -> returns list of commands referencing keyword.  Try "apropos skimmer"
+     help command     -> Help for a specific command returned by apropos
+  
+Show DX Command Examples
+     sh/dx, sh/dx on 20m, sh/dx dxcc 9m2, sh/dx dxcc 9m2 on 20m,
+     sh/dx dxcc 9m2 by w, "sh/dx zone 14.,15,16", sh/dx 9m2kdx
+  
+For other filtering commands, see:  https://wiki.dxcluster.org/wiki/DXSpider_Filtering_Manual
+The Users Manual is available at:   https://wiki.dxcluster.org/wiki/DXSpider_User_Manual
+  
+For help, enter "help apropos" to get started.   
+  
+--------------------------------------------------------------------------------

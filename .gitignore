@@ -1,0 +1,11 @@
+# Runtime / local data (mounted by docker-compose)
+local/
+local_data/
+connect/
+local_cmd/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
