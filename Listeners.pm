@@ -13,9 +13,8 @@ package main;
 use vars qw(@listen);
 
 @listen = (
-# remove the '#' character from the next line to enable the listener!
-		   ["::", 7300],     # IPV4 and IPV6
-		   ["::", 8001],     # IPV4 and IPV6  - Cluster Connection Port
+		   ["0.0.0.0", 7300],     # IPV4 only
+		   ["0.0.0.0", 8001],     # IPV4 only  - Cluster Connection Port
 # ^
 # |
 # 		   
